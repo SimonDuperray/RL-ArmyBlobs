@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt, numpy as np, time
 from matplotlib.patches import Rectangle
 from matplotlib import style
-from Blob import Blob
-from BlobTypes import BlobTypes
+from classes.Blob import Blob
+from classes.BlobTypes import BlobTypes
 
 style.use('ggplot')
 
