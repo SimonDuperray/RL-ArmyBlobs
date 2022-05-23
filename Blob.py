@@ -1,9 +1,9 @@
 import numpy as np
 
 class Blob:
-   def __init__(self, env_size, type, x=None, y=None, range=None):
+   def __init__(self, env_size, blob_type, x=None, y=None, range=None):
       self.env_size = env_size
-      self.type = type
+      self.blob_type = blob_type
       if x is not None:
          self.x = x
       else:
@@ -18,4 +18,4 @@ class Blob:
          self.range = None
 
    def __str__(self):
-      pass
+      return f"Blob type: {self.blob_type} [r={self.range if self.range is not None else None}] - ({self.x}, {self.y})"

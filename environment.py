@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt, numpy as np, time
 from matplotlib.patches import Rectangle
 from matplotlib import style
 from Blob import Blob
+from BlobTypes import BlobTypes
 
 style.use('ggplot')
 
@@ -43,10 +44,12 @@ def scatter_enemy(fig, enemy):
 def scatter_target(fig, target):
    fig.gca().scatter(target.x, target.y, color='green')
 
-target = Blob(env_size=ENV_SIZE, type='target', x=START_FOOD_POSITION, y=START_FOOD_POSITION)
-player = Blob(env_size=ENV_SIZE, type='player', x=START_PLAYER_POSITION, y=START_PLAYER_POSITION)
-e1 = Blob(env_size=ENV_SIZE, type='enemy', range=RANGE, x=5, y=15)
-e2 = Blob(env_size=ENV_SIZE, type='enemy', range=RANGE, x=10, y=10)
+target = Blob(env_size=ENV_SIZE, blob_type=BlobTypes.TARGET, x=START_FOOD_POSITION, y=START_FOOD_POSITION)
+player = Blob(env_size=ENV_SIZE, blob_type=BlobTypes.PLAYER, x=START_PLAYER_POSITION, y=START_PLAYER_POSITION)
+e1 = Blob(env_size=ENV_SIZE, blob_type=BlobTypes.ENEMY, range=RANGE, x=5, y=15)
+e2 = Blob(env_size=ENV_SIZE, blob_type=BlobTypes.ENEMY, range=RANGE, x=10, y=10)
+print(target)
+print(e1)
 
 fig = create_environment(ENV_SIZE)
 draw_limits(fig, ENV_SIZE)
