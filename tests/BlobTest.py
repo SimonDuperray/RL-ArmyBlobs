@@ -1,7 +1,7 @@
 import unittest, sys
 sys.path[0]+="\\.."
-from sr.Blob import Blob
-from sr.BlobTypes import BlobTypes
+from classes.Blob import Blob
+from classes.BlobTypes import BlobTypes
 
 ENV_SIZE = 20
 
