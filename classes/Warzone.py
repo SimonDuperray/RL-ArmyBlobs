@@ -20,6 +20,16 @@ class Warzone:
       self.targets = []
       self.enemies = []
 
+   def __str__(self):
+      return f"""
+         - Warzone Size: {self.size}x{self.size}
+         - Walls: {self.walls}
+         - Points in walls: {self.__points_in_walls}
+         - Agents: {[ag.__str__() for ag in self.agents]}
+         - Targets: {[tar.__str__() for tar in self.targets]}
+         - Enemies: {[ene.__str__() for ene in self.enemies]}
+      """
+
    def init_environment(self):
       fig = plt.figure()
       fig.suptitle(f"({self.size}), {self.size}) Environment")
