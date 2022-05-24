@@ -1,4 +1,4 @@
-import matplotlib.pyplot as plt, numpy as np
+import matplotlib.pyplot as plt, numpy as np, math
 from matplotlib.patches import Rectangle
 from matplotlib import style
 
@@ -90,6 +90,15 @@ class Warzone:
       f.scatter(self.enemies[-1].x, self.enemies[-1].y, color='red', marker="<")
       range_ = plt.Circle((self.enemies[-1].x, self.enemies[-1].y), RANGE, color='red', fill=True, alpha=0.2)
       f.add_artist(range_)
+
+   def is_existing_path(self):
+      pass
+
+   def is_in_enemies_range(self, x, y):
+      for en in self.enemies:
+         if math.sqrt((x-en.x)**2 + (y-en.y)**2) <= en.range:
+            return True
+      return False
 
    def run(self):
       plt.show()
