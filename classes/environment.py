@@ -1,4 +1,4 @@
-import matplotlib.pyplot as plt, numpy as np, time
+import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from matplotlib import style
 from Blob import Blob
