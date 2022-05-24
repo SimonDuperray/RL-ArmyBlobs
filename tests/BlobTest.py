@@ -52,6 +52,49 @@ class TestBlob(unittest.TestCase):
       self.assertEqual(blob3.x, 5)
       self.assertEqual(blob3.y, 5)
       self.assertEqual(blob3.range, 2)
+
+   def test_sub_operation(self):
+      b1 = Blob(ENV_SIZE, BlobTypes.PLAYER, x=5, y=5)
+      b2 = Blob(ENV_SIZE, BlobTypes.PLAYER, x=7, y=7)
+      self.assertEqual(b1-b2, (-2, -2))
+
+   def test_moove(self):
+      blob = Blob(ENV_SIZE, BlobTypes.PLAYER, x=5, y=5)
+      blob.moove()
+      self.assertTrue(blob.x>=4 or blob.x<=6)
+      self.assertTrue(blob.y>=4 or blob.y<=6)
+
+      blob = Blob(ENV_SIZE, BlobTypes.PLAYER, x=5, y=5)
+      blob.moove(x=2, y=-2)
+      self.assertTrue(blob.x==7)
+      self.assertTrue(blob.y==3)
+
+      blob = Blob(ENV_SIZE, BlobTypes.PLAYER, x=2, y=2)
+      blob.moove(x=-5, y=-5)
+      self.assertTrue(blob.x==0)
+      self.assertTrue(blob.y==0)
+
+      blob = Blob(ENV_SIZE, BlobTypes.PLAYER, x=18, y=18)
+      blob.moove(x=5, y=5)
+      self.assertTrue(blob.x==ENV_SIZE-1)
+      self.assertTrue(blob.y==ENV_SIZE-1)
+
+   def test_action(self):
+      blob = Blob(ENV_SIZE, BlobTypes.PLAYER, x=5, y=5)
+      blob.action(0)
+      self.assertEqual(blob.x, 6)
+      self.assertEqual(blob.y, 6)
+      blob.action(1)
+      self.assertEqual(blob.x, 5)
+      self.assertEqual(blob.y, 5)
+      blob.action(2)
+      self.assertEqual(blob.x, 4)
+      self.assertEqual(blob.y, 6)
+      blob.action(3)
+      self.assertEqual(blob.x, 5)
+      self.assertEqual(blob.y, 5)
+      
+      self.assertIsNone(blob.action(4))
       
 if __name__ == '__main__':
    unittest.main()

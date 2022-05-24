@@ -28,6 +28,13 @@ The Warzone class will incorporate the grid (environment) and all its components
 
 Into this package, all the previously cited classes will be tested with unittest package. I put attention to compelex methods, primarily for Warzone class (path finding, get points into walls, etc.).
 
+To get the highest possible coverage, I use coverage Python package will the following commands:
+
+```cmd
+$ coverage run .\tests\<test_filename>.py
+$ coverage report -m
+```
+
 ## Processus
 At the beginning, all the Blob instances (agent, target, enemies) and the walls will be initialized with a given pair of coordinates (x, y).
 
