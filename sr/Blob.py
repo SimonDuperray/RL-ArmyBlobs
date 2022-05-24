@@ -5,11 +5,17 @@ class Blob:
       self.env_size = env_size
       self.blob_type = blob_type
       if x is not None:
-         self.x = x
+         if x<=self.env_size and x>=0:
+            self.x = x
+         else:
+            self.x = np.random.randint(0, self.env_size)
       else:
          self.x = np.random.randint(0, self.env_size)
       if y is not None:
-         self.y = y
+         if y<=self.env_size and y>=0:
+            self.y = y
+         else:
+            self.y = np.random.randint(0, self.env_size)
       else:
          self.y = np.random.randint(0, self.env_size)
       if range is not None:
