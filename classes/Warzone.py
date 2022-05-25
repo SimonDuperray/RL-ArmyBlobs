@@ -132,26 +132,16 @@ class Warzone:
       rm = np.full((self.size+1, self.size+1), -1)
       pts_in_walls = self.__points_in_walls
       for pt_in_wall in pts_in_walls:
-         rm[pt_in_wall[0]][pt_in_wall[1]] = -100
+         rm[self.size-pt_in_wall[1], pt_in_wall[0]] = -100
       # targets
       for target in self.targets:
-         rm[target.x, target.y] = 100
-
+         rm[self.size-target.y, target.x] = 100
       # enemies
       for enemy in self.enemies:
-         rm[enemy['blob_enemy'].x, enemy['blob_enemy'].y] = -50
+         rm[self.size-enemy['blob_enemy'].y, enemy['blob_enemy'].x] = -50
          for r in enemy['ranged_points']:
-            rm[r[0], r[1]] = -20
-
-      print(f"nb target: {np.count_nonzero(rm==100)}")
-      # # enemies
-      # for enemy in self.enemies:
-      #    rm[enemy['blob_enemy'].y, enemy['blob_enemy'].x] = 50
-      #    for rang in enemy['ranged_points']:
-      #       rm[rang[1], rang[0]] = 50
-      # print(f"NZ: {np.count_nonzero(rm==50)}")
+            rm[self.size-r[1], r[0]] = -20
       self.rm = rm
-      
       return self.rm
 
    def run(self):
