@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt, numpy as np, math
-from matplotlib.patches import Rectangle
+from matplotlib.patches import Rectangle, Circle
 from matplotlib import style
 
 style.use('ggplot')
@@ -19,6 +19,7 @@ class Warzone:
       self.agents = []
       self.targets = []
       self.enemies = []
+      self.rm = None
 
    def __str__(self):
       return f"""
@@ -32,7 +33,7 @@ class Warzone:
 
    def init_environment(self):
       fig = plt.figure()
-      fig.suptitle(f"({self.size}), {self.size}) Environment")
+      fig.suptitle(f"({self.size}, {self.size}) Environment")
       plt.xlim(-self.size/10, self.size+self.size/10)
       plt.ylim(-self.size/10, self.size+self.size/10)
       plt.gcf().gca().set_aspect(1)
@@ -84,11 +85,38 @@ class Warzone:
       f = self.fig.gca()
       f.scatter(self.targets[-1].x, self.targets[-1].y, color='green')
 
+   def get_points_in_range(self, blob_enemy):
+      # circle = Circle((blob_enemy.x, blob_enemy.y), radius=blob_enemy.range)
+      # points = [(x, y) for x, y in zip([i for i in range(self.size)], [i for i in range(self.size)]) if circle.contains_point([x, y])]
+      # return points
+      pts = []
+      p = (blob_enemy.x, blob_enemy.y)
+      r = blob_enemy.range
+      for i in range(1, r+1):
+         pts.append(
+            (p[0]-i, p[1])
+         )
+         pts.append(
+            (p[0], p[1]-i)
+         )
+         pts.append(
+            (p[0]+i, p[1])
+         )
+         pts.append(
+            (p[0], p[1]+i)
+         )
+      print(f"pts in range: {pts}")
+      return pts
+
    def add_enemy(self, blob_enemy):
-      self.enemies.append(blob_enemy)
+      ranged_points = self.get_points_in_range(blob_enemy)
+      self.enemies.append({
+         'blob_enemy': blob_enemy,
+         'ranged_points': ranged_points
+      })
       f = self.fig.gca()
-      f.scatter(self.enemies[-1].x, self.enemies[-1].y, color='red', marker="<")
-      range_ = plt.Circle((self.enemies[-1].x, self.enemies[-1].y), RANGE, color='red', fill=True, alpha=0.2)
+      f.scatter(self.enemies[-1]['blob_enemy'].x, self.enemies[-1]['blob_enemy'].y, color='red', marker="<")
+      range_ = plt.Circle((self.enemies[-1]['blob_enemy'].x, self.enemies[-1]['blob_enemy'].y), self.enemies[-1]['blob_enemy'].range, color='red', fill=True, alpha=0.2)
       f.add_artist(range_)
 
    def is_existing_path(self):
@@ -99,6 +127,32 @@ class Warzone:
          if math.sqrt((x-en.x)**2 + (y-en.y)**2) <= en.range:
             return True
       return False
+
+   def get_rewards_map(self):
+      rm = np.full((self.size+1, self.size+1), -1)
+      pts_in_walls = self.__points_in_walls
+      for pt_in_wall in pts_in_walls:
+         rm[pt_in_wall[0]][pt_in_wall[1]] = -100
+      # targets
+      for target in self.targets:
+         rm[target.x, target.y] = 100
+
+      # enemies
+      for enemy in self.enemies:
+         rm[enemy['blob_enemy'].x, enemy['blob_enemy'].y] = -50
+         for r in enemy['ranged_points']:
+            rm[r[0], r[1]] = -20
+
+      print(f"nb target: {np.count_nonzero(rm==100)}")
+      # # enemies
+      # for enemy in self.enemies:
+      #    rm[enemy['blob_enemy'].y, enemy['blob_enemy'].x] = 50
+      #    for rang in enemy['ranged_points']:
+      #       rm[rang[1], rang[0]] = 50
+      # print(f"NZ: {np.count_nonzero(rm==50)}")
+      self.rm = rm
+      
+      return self.rm
 
    def run(self):
       plt.show()
