@@ -1,4 +1,5 @@
-import numpy as np
+import numpy as np, matplotlib.pyplot as plt
+plt.style.use('ggplot')
 
 # global variables
 BOARD_ROWS = 5
@@ -117,7 +118,7 @@ class Agent:
 
    def play(self, rounds=10):
       i = 0
-      while i < rounds:
+      while i < rounds+1:
          # to the end of game back propagate reward
          if self.State.isEnd:
             # back propagate
@@ -141,6 +142,19 @@ class Agent:
             self.State.isEndFunc()
             print("nxt state", self.State.state)
             print("---------------------")
+            if i%5==0:
+               plt.suptitle(f"Round {i}/{rounds}")
+               plt.xlim(-1, BOARD_COLS+1)
+               plt.ylim(-1, BOARD_ROWS+1)
+               for loose in LOSE_STATES:
+                  plt.scatter(loose[1], loose[0], marker='x', color='red', label='loose')
+               for wall in WALLS:
+                  plt.scatter(wall[1], wall[0], marker='x', color='black', label='wall')
+               plt.scatter(self.State.state[1], self.State.state[0], color='blue')
+               plt.scatter(WIN_STATE[1], WIN_STATE[0], color='green', marker='<')
+               plt.legend(loc='upper left')
+               plt.pause(.1)
+               plt.clf()
 
    def showValues(self):
       for i in range(0, BOARD_ROWS):
