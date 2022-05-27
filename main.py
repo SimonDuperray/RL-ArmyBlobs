@@ -133,6 +133,8 @@ class Agent:
       self.State = State()
 
    def play(self, rounds=10):
+      fig = plt.figure()
+      ax = fig.add_subplot(111, projection='3d')
       i = 0
       while i < rounds+1:
          # to the end of game back propagate reward
@@ -158,33 +160,48 @@ class Agent:
             self.State.isEndFunc()
             # print("nxt state", self.State.state)
             # print("---------------------")
-            if i%2500==0:
-               plt.suptitle(f"Round {i}/{rounds}")
+            # if i%2500==0:
+            if i==rounds-1:
+               fig.suptitle(f"Round {i}/{rounds}")
                plt.xlim(-1, BOARD_COLS+1)
                plt.ylim(-1, BOARD_ROWS+1)
+               ax.set_zlim(0,3)
                # plot borders
-               plt.plot([0, BOARD_COLS], [0, 0], color='black')
-               plt.plot([0, 0], [0, BOARD_ROWS], color='black')
-               plt.plot([BOARD_COLS, BOARD_COLS], [0, BOARD_ROWS], color='black')
-               plt.plot([0, BOARD_COLS], [BOARD_ROWS, BOARD_ROWS], color='black')
+               ax.plot([0, BOARD_COLS], [0, 0], color='black')
+               ax.plot([0, 0], [0, BOARD_ROWS], color='black')
+               ax.plot([BOARD_COLS, BOARD_COLS], [0, BOARD_ROWS], color='black')
+               ax.plot([0, BOARD_COLS], [BOARD_ROWS, BOARD_ROWS], color='black')
                for loose in LOSE_STATES:
-                  plt.scatter(loose[1], loose[0], marker='x', color='red', label='loose')
+                  ax.scatter(loose[1], loose[0], marker='x', color='red', label='loose')
                for wall in WALLS:
                   # plt.scatter(wall[1], wall[0], marker='x', color='black', label='wall')
                   x = wall[0][0]
                   y = wall[0][1]
                   w = wall[1]
                   h = wall[2]
-                  plt.plot([x, x], [y, y+h], color='black')
-                  plt.plot([x, x+w], [y, y], color='black')
-                  plt.plot([x, x+w], [y+h, y+h], color='black')
-                  plt.plot([x+w, x+w], [y, y+h], color='black')
-               plt.scatter(self.State.state[1], self.State.state[0], color='blue', label="agent")
-               plt.scatter(TARGET_STATE[1], TARGET_STATE[0], color='green', marker='<', label="target")
-               plt.legend(loc='upper left')
+                  # down
+                  ax.plot([x, x], [y, y+h], [0,0], color='black')
+                  ax.plot([x, x+w], [y, y], [0,0], color='black')
+                  ax.plot([x, x+w], [y+h, y+h], [0,0], color='black')
+                  ax.plot([x+w, x+w], [y, y+h], [0,0], color='black')
+                  # corners
+                  ax.plot([x, x], [y, y], [0,.5], color='black')
+                  ax.plot([x+w, x+w], [y, y], [0,.5], color='black')
+                  ax.plot([x, x], [y+h, y+h], [0,.5], color='black')
+                  ax.plot([x+w, x+w], [y+h, y+h], [0,.5], color='black')
+                  # top
+                  ax.plot([x, x], [y, y+h], [.5,.5], color='black')
+                  ax.plot([x, x+w], [y, y], [.5,.5], color='black')
+                  ax.plot([x, x+w], [y+h, y+h], [.5,.5], color='black')
+                  ax.plot([x+w, x+w], [y, y+h], [.5,.5], color='black')
+               # ax.scatter(self.State.state[1], self.State.state[0], 0, color='blue', label="agent")
+               ax.plot([self.State.state[1], self.State.state[1]], [self.State.state[0], self.State.state[0]], [0, .2], color='blue', label='agent')
+               ax.scatter(TARGET_STATE[1], TARGET_STATE[0], color='green', marker='<', label="target")
+               # plt.legend(loc='upper left')
                plt.gca().invert_yaxis()
-               plt.pause(.1)
-               plt.clf()
+               plt.pause(.5)
+      fig.clf()
+
 
    def showValues(self):
       for i in range(0, BOARD_ROWS+1):
