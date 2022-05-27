@@ -1,10 +1,23 @@
-import numpy as np, matplotlib.pyplot as plt
+import numpy as np
+from classes.Blob import Blob
+from classes.BlobTypes import BlobTypes
 
-SIZE = 10
+ENV_SIZE = 20
 
-arr = np.full((SIZE+1, SIZE+1), -1)
-arr[0, 0] = 100
+agent = Blob(ENV_SIZE, BlobTypes.PLAYER, x=1, y=1)
+targets = [Blob(ENV_SIZE, BlobTypes.TARGET, x=18, y=18)]
+enemies = [Blob(ENV_SIZE, BlobTypes.ENEMY, range=4, x=10, y=10)]
 
-arr = arr[::-1]
+AGENT_N = 1
+TARGETS_N = len(targets)
+ENEMIES_N = len(enemies)
 
-print(arr)
+q_table = {}
+vec = []
+
+for tar in targets:
+   vec.append(agent-tar)
+for en in enemies:
+   vec.append(agent-en)
+
+print(vec)

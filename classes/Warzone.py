@@ -150,7 +150,7 @@ class Warzone:
       return self.rm
 
    def is_terminal_state(self, current_row_index, current_col_index):
-      if self.rm[current_col_index, current_row_index] == -1.:
+      if self.get_rewards_map()[current_col_index, current_row_index] == -1.:
          return False
       else:
          return True
@@ -212,7 +212,7 @@ class Warzone:
             old_row_index, old_column_index = row_index, column_index #store the old row and column indexes
             row_index, column_index = self.get_next_location(row_index, column_index, action_index)
             #receive the reward for moving to the new state, and calculate the temporal difference
-            reward = self.rm[row_index, column_index]
+            reward = self.get_rewards_map()[row_index, column_index]
             old_q_value = self.q_values[old_row_index, old_column_index, action_index]
             temporal_difference = reward + (self.discount_factor * np.max(self.q_values[row_index, column_index])) - old_q_value
             #update the Q-value for the previous state and action pair
