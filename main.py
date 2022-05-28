@@ -5,7 +5,7 @@ plt.style.use('ggplot')
 # global variables
 BOARD_ROWS = 10
 BOARD_COLS = 10
-TARGET_STATE = (4, 4)
+TARGET_STATE = (0, BOARD_COLS-1)
 LOSE_STATES = [(1, 3)]
 START = (4, 0)
 WALLS = [
@@ -171,12 +171,10 @@ class Agent:
                self.cumulative_mooves = 0
                i+=1
             else:
-            # if self.State.giveReward()==1 or self.State.giveReward()==-1:
-            #    break
-            # print("nxt state", self.State.state)
-            # print("---------------------")
-               # if i%5000==0:
-               if i==rounds-1:
+               # print("nxt state", self.State.state)
+               # print("---------------------")
+               if i%5000==0:
+               # if i==rounds-1:
                   fig.suptitle(f"Round {i}/{rounds} - Mooves: {self.cumulative_mooves}/200")
                   plt.xlim(-1, BOARD_COLS+1)
                   plt.ylim(-1, BOARD_ROWS+1)
@@ -186,8 +184,10 @@ class Agent:
                   ax.plot([0, 0], [0, BOARD_ROWS], color='black')
                   ax.plot([BOARD_COLS, BOARD_COLS], [0, BOARD_ROWS], color='black')
                   ax.plot([0, BOARD_COLS], [BOARD_ROWS, BOARD_ROWS], color='black')
+                  # scatter enemy
                   for loose in LOSE_STATES:
                      ax.scatter(loose[1], loose[0], marker='x', color='red', label='loose')
+                  # plot walls
                   for wall in WALLS:
                      x = wall[0][0]
                      y = wall[0][1]
@@ -208,18 +208,15 @@ class Agent:
                      ax.plot([x, x+w], [y, y], [.5,.5], color='black', linewidth=.3)
                      ax.plot([x, x+w], [y+h, y+h], [.5,.5], color='black', linewidth=.3)
                      ax.plot([x+w, x+w], [y, y+h], [.5,.5], color='black', linewidth=.3)
-                  # ax.scatter(self.State.state[1], self.State.state[0], 0, color='blue', label="agent")
-                  ax.plot(ays, axs, azs, color='blue', alpha=1, linewidth=1, linestyle="dotted")
-                  ax.plot([ays[-1], ays[-1]], [axs[-1], axs[-1]], [0, .2], color='blue', alpha=1)
-                  # ax.plot([self.State.state[1], self.State.state[1]], [self.State.state[0], self.State.state[0]], [0, .2], color='blue', label='agent')
-                  ax.scatter(TARGET_STATE[1], TARGET_STATE[0], color='green', marker='<', label="target")
-                  # plt.legend(loc='upper left')
+                  # plot agent
+                  ax.plot([ays[-1], ays[-1]], [axs[-1], axs[-1]], [0, .2], color='blue', alpha=1, linewidth=2, label='agent')
+                  # scatter target
+                  ax.scatter(TARGET_STATE[0], TARGET_STATE[1], color='green', marker='<', label="target")
+                  plt.legend(loc='upper left')
                   plt.gca().invert_yaxis()
                   plt.draw()
-                  plt.pause(.1)
+                  plt.pause(.3)
                   ax.clear()
-         # fig.clf()
-
 
    def showValues(self):
       li = ['----------' for _ in range(BOARD_ROWS)]
