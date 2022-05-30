@@ -1,16 +1,24 @@
-from calendar import c
-import numpy as np, matplotlib.pyplot as plt, time
+import numpy as np, matplotlib.pyplot as plt, math
+from matplotlib.patches import Circle
+import mpl_toolkits.mplot3d.art3d as art3d
 plt.style.use('ggplot')
 
 # global variables
 BOARD_ROWS = 10
 BOARD_COLS = 10
 TARGET_STATE = (0, BOARD_COLS-1)
-LOSE_STATES = [(1, 3)]
-START = (4, 0)
+ENEMIES_STATES = [
+   ((2, 3), 2),
+   ((6, 3), 1),
+   ((6, 0), 1),
+   ((6, 1), 1),
+   ((6, 4), 1),
+   ((6, 5), 1)
+]
+START = (8, 0)
 WALLS = [
    ((1, 2), 1, 2),
-   ((5, 5), 2, 2)
+   ((5, 5), 5, 2)
 ]
 DETERMINISTIC = True
 
@@ -24,8 +32,16 @@ def get_points_in_wall(walls):
       h = wall[2]
       for xi in range(x, x+w+1):
          for yi in range(y, y+h+1):
-            pts.append((yi, xi))
+            pts.append((xi, yi))
    return list(dict.fromkeys(pts))
+
+def is_in_enemy_range(enemy, agent_state):
+   # for enemy in enemies:
+      # print(f"enemy[0][1]: {type(enemy[0][1])} - enemy[0][0]: {type(enemy[0][0])} - agent[1]: {type(agent_state[1])} - agent[0]: {type(agent_state[0])} - enemy[1]: {type(enemy[1])}")
+      # print(f"enemy: {enemy} - agent: {agent_state}")
+   if round(math.dist((enemy[0][1], enemy[0][0]), (agent_state[1], agent_state[0])), 2)<float(enemy[1]):
+      return True
+   return False
 
 class State:
    def __init__(self, state=START):
@@ -37,15 +53,20 @@ class State:
       self.determine = DETERMINISTIC
 
    def giveReward(self):
+      for enemy in ENEMIES_STATES:
+         if self.state==enemy[0]:
+            return -1
+         if is_in_enemy_range(enemy, self.state):
+            return -0.5
       if self.state == TARGET_STATE:
          return 1
-      elif self.state in LOSE_STATES:
-         return -1
+      # elif self.state in ENEMIES_STATES:
+         # return -1
       else:
          return 0
 
    def isEndFunc(self):
-      if (self.state == TARGET_STATE) or (self.state in LOSE_STATES):
+      if (self.state == TARGET_STATE) or (self.state in ENEMIES_STATES):
          self.isEnd = True
 
    def nxtPosition(self, action):
@@ -106,6 +127,8 @@ class Agent:
       for i in range(BOARD_ROWS+1):
          for j in range(BOARD_COLS+1):
             self.state_values[(i, j)] = 0  # set initial value to 0
+      # self.times_in_range = 0
+      
 
    def chooseAction(self):
       # choose action with most expected value
@@ -146,6 +169,8 @@ class Agent:
          if self.State.isEnd:
             # back propagate
             reward = self.State.giveReward()
+            # if reward==-0.5:
+            #    self.times_in_range+=1
             # explicitly assign end state to reward values
             self.state_values[self.State.state] = reward  # this is optional
             # print("Game End Reward", reward)
@@ -176,8 +201,12 @@ class Agent:
                if i%5000==0:
                # if i==rounds-1:
                   fig.suptitle(f"Round {i}/{rounds} - Mooves: {self.cumulative_mooves}/200")
-                  plt.xlim(-1, BOARD_COLS+1)
-                  plt.ylim(-1, BOARD_ROWS+1)
+                  ax.set_xlim(-1, BOARD_COLS+1)
+                  ax.set_ylim(-1, BOARD_ROWS+1)
+                  ax.set_xlabel('x axis')
+                  ax.set_ylabel('y axis')
+                  ax.set_zlabel('z axis')
+
                   ax.set_zlim(0,3)
                   # plot borders
                   ax.plot([0, BOARD_COLS], [0, 0], color='black')
@@ -185,8 +214,14 @@ class Agent:
                   ax.plot([BOARD_COLS, BOARD_COLS], [0, BOARD_ROWS], color='black')
                   ax.plot([0, BOARD_COLS], [BOARD_ROWS, BOARD_ROWS], color='black')
                   # scatter enemy
-                  for loose in LOSE_STATES:
-                     ax.scatter(loose[1], loose[0], marker='x', color='red', label='loose')
+                  for enemy in ENEMIES_STATES:
+                     ax.scatter(enemy[0][1], enemy[0][0], marker='x', color='red', label='enemy')
+                     enemy_range = Circle((enemy[0][1], enemy[0][0]), radius=enemy[1], facecolor='red', alpha=.1)
+                     ax.add_patch(enemy_range)
+                     art3d.pathpatch_2d_to_3d(enemy_range, z=0, zdir="z")
+                     # enemy_range = Circle((enemy[0][1], enemy[0][0]), radius=enemy[1], facecolor='red', alpha=.1)
+                     # ax.add_patch(enemy_range)
+                     # art3d.pathpatch_2d_to_3d(enemy_range, z=0.3, zdir="z")
                   # plot walls
                   for wall in WALLS:
                      x = wall[0][0]
@@ -211,11 +246,11 @@ class Agent:
                   # plot agent
                   ax.plot([ays[-1], ays[-1]], [axs[-1], axs[-1]], [0, .2], color='blue', alpha=1, linewidth=2, label='agent')
                   # scatter target
-                  ax.scatter(TARGET_STATE[0], TARGET_STATE[1], color='green', marker='<', label="target")
+                  ax.scatter(TARGET_STATE[0], TARGET_STATE[1], color='green', marker='<', label="target", s=50)
                   plt.legend(loc='upper left')
                   plt.gca().invert_yaxis()
                   plt.draw()
-                  plt.pause(.3)
+                  plt.pause(.1)
                   ax.clear()
 
    def showValues(self):
@@ -231,6 +266,7 @@ class Agent:
 
 
 if __name__ == "__main__":
+   print(get_points_in_wall(WALLS))
    ag = Agent()
    ag.play(20000)
    print(ag.showValues())
